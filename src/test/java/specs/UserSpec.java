@@ -39,4 +39,10 @@ public class UserSpec {
             .log(BODY)
             .expectStatusCode(415)
             .build();
+
+    public static ResponseSpecification findUserResponseSpec = new ResponseSpecBuilder()
+            .log(STATUS)
+            .log(BODY)
+            .expectStatusCode(200)
+            .build();
 }

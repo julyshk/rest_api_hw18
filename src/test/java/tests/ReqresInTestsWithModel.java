@@ -9,6 +9,8 @@ import static io.restassured.RestAssured.given;
 import static org.assertj.core.api.Assertions.assertThat;
 import static io.qameta.allure.Allure.step;
 import static specs.UserSpec.*;
+import static org.hamcrest.Matchers.hasItem;
+import static org.hamcrest.CoreMatchers.*;
 
 public class ReqresInTestsWithModel {
 
@@ -109,4 +111,53 @@ public class ReqresInTestsWithModel {
             assertThat(userResponse.getId()).isEqualTo("222");
         });
     }
+
+    @Test
+    @DisplayName("GET ..users?page=2 search email with groovy")
+    void searchEmailTestWithGroovy() {
+        step("GET ..users?page=2 search email with groovy", () -> {
+
+            given()
+                    .spec(userRequestSpec)
+                    .when()
+                    .get("/users?page=2")
+                    .then()
+                    .spec(findUserResponseSpec)
+                    .body("data.findAll{it.email =~/.*?@reqres.in/}.email.flatten()",
+                    hasItem("michael.lawson@reqres.in"));
+        });
+    }
+
+    @Test
+    @DisplayName("GET ..users?page=2 search username by id with groovy")
+    void searchUsernameTestWithGroovy() {
+        step("GET ..users?page=2 search username by id with groovy", () -> {
+
+            given()
+                    .spec(userRequestSpec)
+                    .when()
+                    .get("/users?page=2")
+                    .then()
+                    .spec(findUserResponseSpec)
+                    .body("data.find{it.id == 7}.first_name", is("Michael"));
+        });
+    }
+
+    @Test
+    @DisplayName("GET ..users?page=2 search email by first_name and last_name with groovy")
+    void searchUserEmailByNameTestWithGroovy() {
+        step("GET ..users?page=2 search email by first_name and last_name with groovy", () -> {
+
+            given()
+                    .spec(userRequestSpec)
+                    .when()
+                    .get("/users?page=2")
+                    .then()
+                    .spec(findUserResponseSpec)
+                    .body("data.find{(it.first_name =~/Lindsay/)&&(it.last_name =~/Ferguson/)}.email", is("lindsay.ferguson@reqres.in"));
+        });
+    }
+
+
+
 }
